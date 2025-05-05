@@ -1,4 +1,4 @@
-# Contributing to Soenneker.Utils.Runtime
+﻿# Contributing to Soenneker.Utils.Runtime
 
 We're excited that you're interested in contributing!
 
