@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -78,14 +78,18 @@ public static class RuntimeUtil
         return OperatingSystem.IsIOS();
     }
 
+    private static readonly Lazy<bool> _isGitHubAction = new(IsGitHubAction, true);
+
     /// <summary>
     /// Determines whether the current environment is a GitHub Action.
     /// </summary>
     /// <returns></returns>
     [Pure]
-    public static bool IsGitHubAction()
+    public static bool IsGitHubAction() => _isGitHubAction.Value;
+
+    private static bool DetectIsGitHubAction()
     {
-        string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
+        string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("CI");
 
         if (actionStr != null && actionStr.EqualsIgnoreCase("true"))
             return true;
@@ -93,25 +97,25 @@ public static class RuntimeUtil
         return false;
     }
 
+    private static readonly Lazy<bool> _isAzureFunction = new(() => Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME").HasContent(), true);
+
     /// <summary>
     ///  Determines whether the current environment is an Azure Function.
     /// </summary>
     /// <returns></returns>
     [Pure]
-    public static bool IsAzureFunction()
-    {
-        return Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME").HasContent();
-    }
+    public static bool IsAzureFunction => _isAzureFunction.Value;
+
+    private static readonly Lazy<bool> _isAzureAppService =
+        new(
+            () => (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent(), true);
 
     /// <summary>
     /// Code, Custom container, windows or linux
     /// </summary>
     /// <returns></returns>
     [Pure]
-    public static bool IsAzureAppService()
-    {
-        return (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent();
-    }
+    public static bool IsAzureAppService => _isAzureAppService.Value;
 
     private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer = new(async (token, _) => await DetectIsContainer(token));
 
