@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Soenneker.Extensions.String;
 using Soenneker.Extensions.Task;
 
 #if WINDOWS
@@ -77,6 +78,21 @@ public static class RuntimeUtil
         return OperatingSystem.IsIOS();
     }
 
+    /// <summary>
+    /// Determines whether the current environment is a GitHub Action.
+    /// </summary>
+    /// <returns></returns>
+    [Pure]
+    public static bool IsGitHubAction()
+    {
+        string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
+
+        if (actionStr != null && actionStr.EqualsIgnoreCase("true"))
+            return true;
+
+        return false;
+    }
+
     private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer = new(async (token, _) => await DetectIsContainer(token));
 
     /// <summary>
@@ -93,6 +109,12 @@ public static class RuntimeUtil
 
     private static async ValueTask<bool> DetectIsContainer(CancellationToken cancellationToken = default)
     {
+        string? inContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") ??
+                              Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINERS");
+
+        if (inContainer != null && inContainer.EqualsIgnoreCase("true"))
+            return true;
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             if (File.Exists("/.dockerenv"))
