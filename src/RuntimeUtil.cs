@@ -78,16 +78,7 @@ public static class RuntimeUtil
         return OperatingSystem.IsIOS();
     }
 
-    private static readonly Lazy<bool> _isGitHubAction = new(IsGitHubAction, true);
-
-    /// <summary>
-    /// Determines whether the current environment is a GitHub Action.
-    /// </summary>
-    /// <returns></returns>
-    [Pure]
-    public static bool IsGitHubAction() => _isGitHubAction.Value;
-
-    private static bool DetectIsGitHubAction()
+    private static readonly Lazy<bool> _isGitHubAction = new(() =>
     {
         string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("CI");
 
@@ -95,7 +86,10 @@ public static class RuntimeUtil
             return true;
 
         return false;
-    }
+    });
+
+
+    public static bool IsGitHubAction => _isGitHubAction.Value;
 
     private static readonly Lazy<bool> _isAzureFunction = new(() => Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME").HasContent(), true);
 
@@ -103,18 +97,15 @@ public static class RuntimeUtil
     ///  Determines whether the current environment is an Azure Function.
     /// </summary>
     /// <returns></returns>
-    [Pure]
     public static bool IsAzureFunction => _isAzureFunction.Value;
 
     private static readonly Lazy<bool> _isAzureAppService =
-        new(
-            () => (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent(), true);
+        new(() => (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent(), true);
 
     /// <summary>
     /// Code, Custom container, windows or linux
     /// </summary>
     /// <returns></returns>
-    [Pure]
     public static bool IsAzureAppService => _isAzureAppService.Value;
 
     private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer = new(async (token, _) => await DetectIsContainer(token));
