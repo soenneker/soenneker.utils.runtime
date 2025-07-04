@@ -1,5 +1,14 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Soenneker.Extensions.Task;
+
+#if WINDOWS
+using Microsoft.Win32;
+#endif
 
 namespace Soenneker.Utils.Runtime;
 
@@ -66,5 +75,75 @@ public static class RuntimeUtil
     public static bool IsIos()
     {
         return OperatingSystem.IsIOS();
+    }
+
+    private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer = new(async (token, _) => await DetectIsContainer(token));
+
+    /// <summary>
+    /// Determines if the current OS is running inside a container (like Docker).
+    /// </summary>
+    /// <remarks>
+    /// Not super dependable when it comes to running in various Windows container environments.
+    /// </remarks>
+    [Pure]
+    public static async ValueTask<bool> IsContainer(CancellationToken cancellationToken = default)
+    {
+        return (await _isContainer.Get(cancellationToken)).GetValueOrDefault();
+    }
+
+    private static async ValueTask<bool> DetectIsContainer(CancellationToken cancellationToken = default)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            if (File.Exists("/.dockerenv"))
+                return true;
+
+            const string cgroupPath = "/proc/1/cgroup";
+
+            if (File.Exists(cgroupPath))
+            {
+                string[] lines = await File.ReadAllLinesAsync(cgroupPath, cancellationToken).NoSync();
+
+                foreach (string line in lines)
+                {
+                    if (line.Contains("docker", StringComparison.OrdinalIgnoreCase) || line.Contains("kubepods", StringComparison.OrdinalIgnoreCase) ||
+                        line.Contains("containerd", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+#if WINDOWS
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Most Windows containers run as ContainerAdministrator under "User Manager"
+            if (Environment.UserName == "ContainerAdministrator" && Environment.UserDomainName == "User Manager")
+            {
+                return true;
+            }
+
+            try
+            {
+                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control");
+                object? val = key?.GetValue("ContainerType");
+
+                if (val is 2)
+                    return true;
+            }
+            catch
+            {
+                // Ignore registry read failures
+            }
+
+            return false;
+        }
+#endif
+
+        // Unknown platform
+        return false;
     }
 }

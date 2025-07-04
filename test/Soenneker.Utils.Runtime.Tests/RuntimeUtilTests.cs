@@ -1,5 +1,6 @@
 using Soenneker.Facts.Local;
 using Soenneker.Tests.FixturedUnit;
+using System.Threading.Tasks;
 using Xunit;
 
 
@@ -12,9 +13,21 @@ public class RuntimeUtilTests : FixturedUnitTest
     {
     }
 
+    [Fact]
+    public void Default()
+    { 
+    
+    }
+
     [LocalFact]
     public void IsWindows()
     {
-        var result = RuntimeUtil.IsWindows();
+        bool result = RuntimeUtil.IsWindows();
+    }
+
+    [LocalFact]
+    public async ValueTask IsContainer()
+    { 
+        bool result = await RuntimeUtil.IsContainer(CancellationToken);
     }
 }
