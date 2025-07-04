@@ -93,6 +93,26 @@ public static class RuntimeUtil
         return false;
     }
 
+    /// <summary>
+    ///  Determines whether the current environment is an Azure Function.
+    /// </summary>
+    /// <returns></returns>
+    [Pure]
+    public static bool IsAzureFunction()
+    {
+        return Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME").HasContent();
+    }
+
+    /// <summary>
+    /// Code, Custom container, windows or linux
+    /// </summary>
+    /// <returns></returns>
+    [Pure]
+    public static bool IsAzureAppService()
+    {
+        return (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent();
+    }
+
     private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer = new(async (token, _) => await DetectIsContainer(token));
 
     /// <summary>
