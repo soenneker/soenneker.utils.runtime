@@ -1,22 +1,15 @@
 using Soenneker.Facts.Local;
-using Soenneker.Tests.FixturedUnit;
 using System.Threading.Tasks;
 using Xunit;
 
 
 namespace Soenneker.Utils.Runtime.Tests;
 
-[Collection("Collection")]
-public class RuntimeUtilTests : FixturedUnitTest
+public class RuntimeUtilTests
 {
-    public RuntimeUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
-    {
-    }
-
     [Fact]
     public void Default()
-    { 
-    
+    {
     }
 
     [LocalFact]
@@ -27,7 +20,7 @@ public class RuntimeUtilTests : FixturedUnitTest
 
     [LocalFact]
     public async ValueTask IsContainer()
-    { 
-        bool result = await RuntimeUtil.IsContainer(CancellationToken);
+    {
+        bool result = await RuntimeUtil.IsContainer(TestContext.Current.CancellationToken);
     }
 }

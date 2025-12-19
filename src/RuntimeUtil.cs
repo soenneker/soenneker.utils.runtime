@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Soenneker.Extensions.String;
-using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
+using Soenneker.Utils.AsyncSingleton;
 
 
 #if WINDOWS
@@ -62,8 +62,7 @@ public static class RuntimeUtil
     /// </summary>
     private static readonly Lazy<bool> _isGitHubAction = new(() =>
     {
-        string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ??
-                            Environment.GetEnvironmentVariable("CI");
+        string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("CI");
 
         return actionStr != null && actionStr.EqualsIgnoreCase("true");
     }, isThreadSafe: true);
@@ -77,8 +76,8 @@ public static class RuntimeUtil
     /// <summary>
     /// Lazily determines whether the current process is running inside an Azure Function.
     /// </summary>
-    private static readonly Lazy<bool> _isAzureFunction =
-        new(() => Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME").HasContent(), true);
+    private static readonly Lazy<bool> _isAzureFunction = new(() => Environment.GetEnvironmentVariable("FUNCTIONS_WORKER_RUNTIME")
+                                                                               .HasContent(), true);
 
     /// <summary>
     /// Gets a value indicating whether the current process is running inside an Azure Function.
@@ -90,8 +89,7 @@ public static class RuntimeUtil
     /// (Code, Custom Container, Windows, or Linux).
     /// </summary>
     private static readonly Lazy<bool> _isAzureAppService =
-        new(() => (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ??
-                   Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent(), true);
+        new(() => (Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")).HasContent(), true);
 
     /// <summary>
     /// Gets a value indicating whether the current process is running inside an Azure App Service.
@@ -102,8 +100,8 @@ public static class RuntimeUtil
     /// Async singleton that determines whether the current process is running inside a container.
     /// The result is cached after the first evaluation.
     /// </summary>
-    private static readonly AsyncSingleton.AsyncSingleton<bool?> _isContainer =
-        new(async (token, _) => await DetectIsContainer(token).NoSync());
+    private static readonly AsyncSingleton<bool?> _isContainer = new(async (token) => await DetectIsContainer(token)
+        .NoSync());
 
     /// <summary>
     /// Determines whether the current process is running inside a container
@@ -116,8 +114,8 @@ public static class RuntimeUtil
     /// A value indicating whether the current process is running inside a container.
     /// </returns>
     [Pure]
-    public static async ValueTask<bool> IsContainer(CancellationToken cancellationToken = default)
-        => (await _isContainer.Get(cancellationToken).NoSync()).GetValueOrDefault();
+    public static async ValueTask<bool> IsContainer(CancellationToken cancellationToken = default) => (await _isContainer.Get(cancellationToken)
+        .NoSync()).GetValueOrDefault();
 
     /// <summary>
     /// Performs platform-specific heuristics to determine whether the current process
@@ -150,24 +148,19 @@ public static class RuntimeUtil
                 return false;
 
             // PERF: stream line-by-line to avoid allocating the entire file contents
-            await using var fs = new FileStream(
-                cgroupPath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                bufferSize: 4096,
+            await using var fs = new FileStream(cgroupPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096,
                 options: FileOptions.Asynchronous | FileOptions.SequentialScan);
 
             using var reader = new StreamReader(fs);
 
             while (true)
             {
-                string? line = await reader.ReadLineAsync(cancellationToken).NoSync();
+                string? line = await reader.ReadLineAsync(cancellationToken)
+                                           .NoSync();
                 if (line is null)
                     break;
 
-                if (line.Contains("docker", StringComparison.OrdinalIgnoreCase) ||
-                    line.Contains("kubepods", StringComparison.OrdinalIgnoreCase) ||
+                if (line.Contains("docker", StringComparison.OrdinalIgnoreCase) || line.Contains("kubepods", StringComparison.OrdinalIgnoreCase) ||
                     line.Contains("containerd", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
@@ -181,8 +174,7 @@ public static class RuntimeUtil
         if (OperatingSystem.IsWindows())
         {
             // Most Windows containers run as ContainerAdministrator under "User Manager"
-            if (Environment.UserName == "ContainerAdministrator" &&
-                Environment.UserDomainName == "User Manager")
+            if (Environment.UserName == "ContainerAdministrator" && Environment.UserDomainName == "User Manager")
             {
                 return true;
             }
