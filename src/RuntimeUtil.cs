@@ -164,7 +164,6 @@ public static class RuntimeUtil
                 if (line is null)
                     break;
 
-                // Contains does not allocate; only the line string is allocated by StreamReader.
                 if (line.Contains("docker", StringComparison.OrdinalIgnoreCase) || line.Contains("kubepods", StringComparison.OrdinalIgnoreCase) ||
                     line.Contains("containerd", StringComparison.OrdinalIgnoreCase))
                 {
@@ -198,5 +197,8 @@ public static class RuntimeUtil
 
         return false;
 #endif
+
+        // Non-Linux builds that don't include the WINDOWS block (or other OSes)
+        return false;
     }
 }
