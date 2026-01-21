@@ -4,10 +4,11 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Soenneker.Atomics.NullableBools;
 using Soenneker.Extensions.String;
 using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.AsyncSingleton;
+using Soenneker.Atomics.ValueNullableBools;
+
 
 #if WINDOWS
 using Microsoft.Win32;
