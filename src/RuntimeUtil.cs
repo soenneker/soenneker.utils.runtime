@@ -42,9 +42,9 @@ public static class RuntimeUtil
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIos() => OperatingSystem.IsIOS();
 
-    private static AtomicNullableBool _isGitHubAction = new();
-    private static AtomicNullableBool _isAzureFunction = new();
-    private static AtomicNullableBool _isAzureAppService = new();
+    private static ValueAtomicNullableBool _isGitHubAction = new();
+    private static ValueAtomicNullableBool _isAzureFunction = new();
+    private static ValueAtomicNullableBool _isAzureAppService = new();
 
     /// <summary>
     /// Gets a value indicating whether the current process is running within a GitHub Actions environment.
