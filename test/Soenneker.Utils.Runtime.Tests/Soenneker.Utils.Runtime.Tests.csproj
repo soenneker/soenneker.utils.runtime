@@ -11,7 +11,7 @@
 
     </PropertyGroup>
 
-    <ItemGroup><PackageReference Include="Soenneker.Facts.Local" Version="4.0.560" /><PackageReference Include="xUnit.v3" Version="3.2.2" /></ItemGroup>
+    <ItemGroup><PackageReference Include="Soenneker.Facts.Local" Version="4.0.561" /><PackageReference Include="xUnit.v3" Version="3.2.2" /></ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Soenneker.Utils.Runtime.csproj" />
