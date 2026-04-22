@@ -1,24 +1,23 @@
-using Soenneker.Facts.Local;
+using Soenneker.Tests.Attributes.Local;
 using System.Threading.Tasks;
-using Xunit;
 
 
 namespace Soenneker.Utils.Runtime.Tests;
 
 public class RuntimeUtilTests
 {
-    [Fact]
+    [Test]
     public void Default()
     {
     }
 
-    [LocalFact]
+    [LocalOnly]
     public void IsWindows()
     {
         bool result = RuntimeUtil.IsWindows();
     }
 
-    [LocalFact]
+    [LocalOnly]
     public async ValueTask IsContainer()
     {
         bool result = await RuntimeUtil.IsContainer(TestContext.Current.CancellationToken);
