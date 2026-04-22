@@ -53,6 +53,6 @@
     <ItemGroup>
         <PackageReference Include="Soenneker.Atomics.ValueNullableBools" Version="4.0.20" />
         <PackageReference Include="Soenneker.Extensions.String" Version="4.0.668" />
-        <PackageReference Include="Soenneker.Utils.AsyncSingleton" Version="4.0.783" />
+        <PackageReference Include="Soenneker.Utils.AsyncSingleton" Version="4.0.784" />
     </ItemGroup>
 </Project>
