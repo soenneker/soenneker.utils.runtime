@@ -20,6 +20,6 @@ public class RuntimeUtilTests
     [LocalOnly]
     public async ValueTask IsContainer()
     {
-        bool result = await RuntimeUtil.IsContainer(TestContext.Current.CancellationToken);
+        bool result = await RuntimeUtil.IsContainer(System.Threading.CancellationToken.None);
     }
 }
