@@ -28,18 +28,38 @@ public static class RuntimeUtil
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsWindows() => OperatingSystem.IsWindows();
 
+    /// <summary>
+    /// Executes the is mac os operation.
+    /// </summary>
+    /// <returns>A value indicating whether the operation succeeded.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsMacOs() => OperatingSystem.IsMacOS();
 
+    /// <summary>
+    /// Executes the is linux operation.
+    /// </summary>
+    /// <returns>A value indicating whether the operation succeeded.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLinux() => OperatingSystem.IsLinux();
 
+    /// <summary>
+    /// Executes the is android operation.
+    /// </summary>
+    /// <returns>A value indicating whether the operation succeeded.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAndroid() => OperatingSystem.IsAndroid();
 
+    /// <summary>
+    /// Executes the is browser operation.
+    /// </summary>
+    /// <returns>A value indicating whether the operation succeeded.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBrowser() => OperatingSystem.IsBrowser();
 
+    /// <summary>
+    /// Executes the is ios operation.
+    /// </summary>
+    /// <returns>A value indicating whether the operation succeeded.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIos() => OperatingSystem.IsIOS();
 
