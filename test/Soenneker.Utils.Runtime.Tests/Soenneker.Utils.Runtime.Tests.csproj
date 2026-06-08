@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.30" />
+        <PackageReference Include="Soenneker.Tests.Attributes.Local" Version="4.0.31" />
         <PackageReference Include="TUnit" Version="1.51.0" />
     </ItemGroup>
 
