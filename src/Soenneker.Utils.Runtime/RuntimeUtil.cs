@@ -29,37 +29,37 @@ public static class RuntimeUtil
     public static bool IsWindows() => OperatingSystem.IsWindows();
 
     /// <summary>
-    /// Executes the is mac os operation.
+    /// Determines whether the current process is running on macOS.
     /// </summary>
-    /// <returns>A value indicating whether the operation succeeded.</returns>
+    /// <returns>True on macOS.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsMacOs() => OperatingSystem.IsMacOS();
 
     /// <summary>
-    /// Executes the is linux operation.
+    /// Determines whether the current process is running on Linux.
     /// </summary>
-    /// <returns>A value indicating whether the operation succeeded.</returns>
+    /// <returns>True on Linux.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLinux() => OperatingSystem.IsLinux();
 
     /// <summary>
-    /// Executes the is android operation.
+    /// Determines whether the current process is running on Android.
     /// </summary>
-    /// <returns>A value indicating whether the operation succeeded.</returns>
+    /// <returns>True on Android.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAndroid() => OperatingSystem.IsAndroid();
 
     /// <summary>
-    /// Executes the is browser operation.
+    /// Determines whether the current process is running in a browser-hosted .NET runtime.
     /// </summary>
-    /// <returns>A value indicating whether the operation succeeded.</returns>
+    /// <returns>True in a browser runtime.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBrowser() => OperatingSystem.IsBrowser();
 
     /// <summary>
-    /// Executes the is ios operation.
+    /// Determines whether the current process is running on iOS.
     /// </summary>
-    /// <returns>A value indicating whether the operation succeeded.</returns>
+    /// <returns>True on iOS.</returns>
     [Pure, MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIos() => OperatingSystem.IsIOS();
 
@@ -146,6 +146,7 @@ public static class RuntimeUtil
     /// Determines whether the current process is running inside a container
     /// (for example Docker or Kubernetes).
     /// </summary>
+    /// <returns><see langword="true"/> when the current process is running inside a container (for example Docker or Kubernetes); otherwise <see langword="false"/>.</returns>
     [Pure]
     public static ValueTask<bool> IsContainer(CancellationToken cancellationToken = default)
     {
