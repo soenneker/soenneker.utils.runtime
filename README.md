@@ -20,12 +20,49 @@ using Soenneker.Utils.Runtime;
 
 Call the static `RuntimeUtil` methods directly; no dependency-injection registration is required.
 
-## Common operations
+## Platform checks
 
-- `IsWindows()` - Determines whether the current operating system is Windows.
-- `IsMacOs()` - Returns whether the current process is running on macOS.
-- `IsLinux()` - Returns whether the current process is running on Linux.
-- `IsAndroid()` - Returns whether the current process is running on Android.
-- `IsBrowser()` - Returns whether the current runtime is WebAssembly in a browser.
-- `IsIos()` - Returns whether the current process is running on iOS.
-- `IsContainer()` - Determines whether the current process is running inside a container (for example Docker or Kubernetes).
+```csharp
+if (RuntimeUtil.IsWindows())
+{
+    // Windows-specific behavior
+}
+
+bool browser = RuntimeUtil.IsBrowser();
+```
+
+`IsWindows`, `IsMacOs`, `IsLinux`, `IsAndroid`, `IsBrowser`, and `IsIos` directly wrap the
+corresponding `OperatingSystem` checks. They describe the current runtime platform; they do not
+infer a deployment environment or distribution.
+
+## Hosting environment hints
+
+```csharp
+bool actions = RuntimeUtil.IsGitHubAction;
+bool functions = RuntimeUtil.IsAzureFunction;
+bool appService = RuntimeUtil.IsAzureAppService;
+```
+
+- `IsGitHubAction` requires `GITHUB_ACTIONS=true`; a generic `CI=true` marker is not enough.
+- `IsAzureFunction` checks for a non-empty `FUNCTIONS_WORKER_RUNTIME` value.
+- `IsAzureAppService` checks for a non-empty `WEBSITE_SITE_NAME` or `WEBSITE_INSTANCE_ID` value.
+
+Each property caches its first result for the process lifetime. Set environment variables before
+the first access; later environment changes are not observed.
+
+## Container detection
+
+```csharp
+bool container = await RuntimeUtil.IsContainer(cancellationToken);
+```
+
+Detection first checks `DOTNET_RUNNING_IN_CONTAINER`/`DOTNET_RUNNING_IN_CONTAINERS`. On Linux it
+then checks `/.dockerenv` and scans `/proc/1/cgroup` for Docker, Kubernetes, or containerd markers.
+On Windows it checks the common container identity and `ContainerType` registry value. Other
+platforms return `false`.
+
+The first successful detection result is cached. The cancellation token applies while the initial
+Linux cgroup file is read; later calls normally return the cached value. Detection is heuristic and
+can have false negatives on container runtimes that expose none of these markers. Do not use it as
+a security boundary or authorization decision. Filesystem access errors from the Linux cgroup
+probe can propagate.

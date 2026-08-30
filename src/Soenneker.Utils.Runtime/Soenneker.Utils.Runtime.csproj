@@ -37,10 +37,6 @@
         </PackageReleaseNotes>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-        <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />

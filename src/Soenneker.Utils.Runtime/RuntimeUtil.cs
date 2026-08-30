@@ -10,9 +10,7 @@ using Soenneker.Utils.AsyncSingleton;
 using Soenneker.Atomics.ValueNullableBools;
 
 
-#if WINDOWS
 using Microsoft.Win32;
-#endif
 
 namespace Soenneker.Utils.Runtime;
 
@@ -82,7 +80,7 @@ public static class RuntimeUtil
             if (cached is not null)
                 return cached.Value;
 
-            string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") ?? Environment.GetEnvironmentVariable("CI");
+            string? actionStr = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
 
             bool value = actionStr is not null && actionStr.EqualsIgnoreCase("true");
 
@@ -196,31 +194,26 @@ public static class RuntimeUtil
             return false;
         }
 
-#if WINDOWS
-        if (!OperatingSystem.IsWindows())
-            return false;
-
-        // Most Windows containers run as ContainerAdministrator under "User Manager"
-        if (Environment.UserName == "ContainerAdministrator" && Environment.UserDomainName == "User Manager")
-            return true;
-
-        try
+        if (OperatingSystem.IsWindows())
         {
-            using RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control");
-            object? val = key?.GetValue("ContainerType");
-
-            if (val is 2)
+            // Most Windows containers run as ContainerAdministrator under "User Manager"
+            if (Environment.UserName == "ContainerAdministrator" && Environment.UserDomainName == "User Manager")
                 return true;
-        }
-        catch
-        {
-            // Ignore registry read failures
+
+            try
+            {
+                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control");
+                object? val = key?.GetValue("ContainerType");
+
+                if (val is 2)
+                    return true;
+            }
+            catch
+            {
+                // Ignore registry read failures
+            }
         }
 
-        return false;
-#endif
-
-        // Non-Linux builds that don't include the WINDOWS block (or other OSes)
         return false;
     }
 }
